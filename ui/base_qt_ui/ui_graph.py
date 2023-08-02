@@ -12,12 +12,12 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_Graph(object):
     def setupUi(self, Graph):
         Graph.setObjectName("Graph")
-        Graph.resize(1120, 160)
-        Graph.setMinimumSize(QtCore.QSize(1120, 160))
-        Graph.setMaximumSize(QtCore.QSize(1120, 160))
-        self.button_reset = QtWidgets.QPushButton(parent=Graph)
-        self.button_reset.setGeometry(QtCore.QRect(525, 130, 70, 20))
-        self.button_reset.setObjectName("button_reset")
+        Graph.resize(1130, 160)
+        Graph.setMinimumSize(QtCore.QSize(1130, 160))
+        Graph.setMaximumSize(QtCore.QSize(1130, 160))
+        self.button_check = QtWidgets.QPushButton(parent=Graph)
+        self.button_check.setGeometry(QtCore.QRect(525, 130, 70, 20))
+        self.button_check.setObjectName("button_check")
         self.lineEdit = QtWidgets.QLineEdit(parent=Graph)
         self.lineEdit.setGeometry(QtCore.QRect(60, 100, 1000, 20))
         self.lineEdit.setObjectName("lineEdit")
@@ -36,5 +36,5 @@ class Ui_Graph(object):
     def retranslateUi(self, Graph):
         _translate = QtCore.QCoreApplication.translate
         Graph.setWindowTitle(_translate("Graph", "Dialog"))
-        self.button_reset.setText(_translate("Graph", "Reset"))
+        self.button_check.setText(_translate("Graph", "Cheсk"))
         self.label.setText(_translate("Graph", "Code"))
