@@ -1,22 +1,24 @@
 import sys
+
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtWidgets import QPushButton
 
 from ui.base_qt_ui.ui_graph import Ui_Graph
 
 
-class System(QtWidgets):
-    def __init__(self, x, y, color):
-        super().__init__()
+class System(QPushButton):
+    def __init__(self, x, y, color, parent):
+        super().__init__(parent)
         self.x = x
         self.y = y
         self.color = color
         self.buttons = []
-        self.ui.pushButton_reset = QtWidgets.QPushButton('Reset', self)
-        self.ui.pushButton_reset.setGeometry(1070, 10, 50, 30)
+        self.end = 0
+        self.level = 0
+        self.pushButton_reset = QtWidgets.QPushButton('Reset', self)
+        self.pushButton_reset.setGeometry(1070, self.x, 50, 30)
         self.form_button()
-        
-    
+
     def form_button(self):
         for row in range(6):
             for col in range(200):
@@ -26,37 +28,17 @@ class System(QtWidgets):
                 button.setStyleSheet(f"background-color: white")
                 button.clicked.connect(self.change_button_color)
                 self.buttons.append(button)
-    
+
     def change_color(self):
-        color = QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.setStyleSheet(f"background-color: {color.name()};")
-    
-
-class Graph(QtWidgets.QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-        self.ui = Ui_Graph()
-        self.ui.setupUi(self)
-        self.end = 0
-        self.level = 0
-        self.system1 = System('red', 10, 10)
-        self.system2 = System('blue', 10, 60)
-        #self.ui.button_check.clicked.connect(self.buttons_check)
+        self.setStyleSheet(f"background-color: {self.color.name()};")
 
     def change_button_color(self):
         button = app.focusWidget()  # Получаем кнопку, на которую нажали
-        if button.palette().button().color().name() == '#ff0000':
-            button.setStyleSheet("background-color: red")
+        if button.palette().button().color().name() != '#ffffff':
+            button.setStyleSheet(f"background-color: {self.color.name()};")
         else:
             button.setStyleSheet("background-color: white")
         self.draw_hor_line(button.objectName())
-
-    def buttons_reset(self):
-        for i in range(1200):
-            self.buttons[i].setStyleSheet(f"background-color: white")
-        self.end = 0
-        self.level = 0
 
     def draw_hor_line(self, name: str):
         number = int(name[-4:])
@@ -73,6 +55,29 @@ class Graph(QtWidgets.QMainWindow):
                     self.buttons[j*200 + self.end].setStyleSheet("background-color: red")
             self.end = col
             self.level = row
+
+    def buttons_reset(self):
+        for i in range(1200):
+            self.buttons[i].setStyleSheet(f"background-color: white")
+        self.end = 0
+        self.level = 0
+    
+
+class Graph(QtWidgets.QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_Graph()
+        self.ui.setupUi(self)
+        self.end = 0
+        self.level = 0
+        self.ui.system1 = System(10, 10, 'red', self)
+        self.ui.system2 = System(10, 60, 'blue', self)
+        self.ui.button_check.clicked.connect(self.buttons_check)
+
+
+    def buttons_check(self):
+        pass
 
 
 if __name__ == '__main__':
