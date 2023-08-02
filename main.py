@@ -1,33 +1,34 @@
 import sys
 
 from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtWidgets import QPushButton, QWidget
 
 from ui.base_qt_ui.ui_graph import Ui_Graph
 
 
-class System(QPushButton):
-    def __init__(self, x, y, color, parent):
-        super().__init__(parent)
+class System(QWidget):
+    def __init__(self, x, y, color, parent=None):
+        super(System, self).__init__(parent)
         self.x = x
         self.y = y
         self.color = color
         self.buttons = []
         self.end = 0
         self.level = 0
-        self.pushButton_reset = QtWidgets.QPushButton('Reset', self)
-        self.pushButton_reset.setGeometry(1070, self.x, 50, 30)
+        #self.pushButton_reset = QtWidgets.QPushButton('Reset', self)
+        #self.pushButton_reset.setGeometry(1070, self.x, 50, 30)
         self.form_button()
 
     def form_button(self):
         for row in range(6):
             for col in range(200):
                 button = QPushButton(f"", self)
-                button.setGeometry(self.x + 5 * col, self.y + 5 * row, 5, 5)
+                button.setGeometry(self.x + 10 * col, self.y + 10 * row, 10, 10)
                 button.setObjectName(f'button{str(col + 200 * row).zfill(4)}')
                 button.setStyleSheet(f"background-color: white")
                 button.clicked.connect(self.change_button_color)
                 self.buttons.append(button)
+        pass
 
     def change_color(self):
         self.setStyleSheet(f"background-color: {self.color.name()};")
@@ -71,8 +72,13 @@ class Graph(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.end = 0
         self.level = 0
-        self.ui.system1 = System(10, 10, 'red', self)
-        self.ui.system2 = System(10, 60, 'blue', self)
+        self.ui.button1_layout = QtWidgets.QVBoxLayout()
+        self.ui.button1_layout.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.ui.button1_layout.setSpacing(0)
+        self.ui.button1_layout.addLayout(self.ui.button1_layout)
+        system1 = System(10, 10, 'red')
+        self.ui.button1_layout.addWidget(system1)
+        #self.ui.system2 = System(60, 10, 'blue', self)
         self.ui.button_check.clicked.connect(self.buttons_check)
 
 
