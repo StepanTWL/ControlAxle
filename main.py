@@ -1,6 +1,6 @@
 import sys
 
-from PyQt6 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtWidgets import QPushButton, QWidget
 
 from ui.base_qt_ui.ui_graph import Ui_Graph
@@ -17,7 +17,12 @@ class System(QWidget):
         self.buttons = []
         self.end = 0
         self.level = 0
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(10)
+        font.setBold(True)
         pushButton_reset = QPushButton('Reset', self)
+        pushButton_reset.setFont(font)
         pushButton_reset.setGeometry(1010, 0, 50, 30)
         pushButton_reset.clicked.connect(self.buttons_reset)
         self.form_button()
@@ -37,7 +42,7 @@ class System(QWidget):
         self.setStyleSheet(f"background-color: {self.color.name()};")
 
     def change_button_color(self):
-        button = app.focusWidget()  # Получаем кнопку, на которую нажали
+        button = app.focusWidget()
         if button.palette().button().color().name() != '#ffffff':
             button.setStyleSheet(f"background-color: {self.color.name()};")
         else:
@@ -49,13 +54,15 @@ class System(QWidget):
         col = number % col_base
         row = number // col_base
         if self.end < col:
-            for i in range(self.end, col):
-                self.buttons[i + row * col_base].setStyleSheet(f"background-color: {self.color}")
-            if self.level > row:
-                for j in range(row, self.level):
-                    self.buttons[j * col_base + self.end].setStyleSheet(f"background-color: {self.color}")
-            elif self.level < row:
-                for j in range(self.level, row):
+            for i in range(self.end, col+1):
+                if row < 3:
+                    row = 0
+                    self.buttons[i].setStyleSheet(f"background-color: {self.color}")
+                else:
+                    row = 5
+                    self.buttons[i + (row_base - 1) * col_base].setStyleSheet(f"background-color: {self.color}")
+            if self.level != row and self.end != 0:
+                for j in range(row_base):
                     self.buttons[j * col_base + self.end].setStyleSheet(f"background-color: {self.color}")
             self.end = col
             self.level = row
@@ -83,8 +90,8 @@ class Graph(QtWidgets.QMainWindow):
 
     def resizeEvent(self, event) -> None:
         super().resizeEvent(event)
-        self.system1.setGeometry(60, 10, 1060, 30)
-        self.system2.setGeometry(60, 55, 1060, 30)
+        self.system1.setGeometry(60, 40, 1060, 30)
+        self.system2.setGeometry(60, 85, 1060, 30)
 
     def buttons_check(self):
         pass
