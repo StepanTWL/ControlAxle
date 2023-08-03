@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>1130</width>
-    <height>160</height>
+    <height>140</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1130</width>
-    <height>160</height>
+    <height>140</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>1130</width>
-    <height>160</height>
+    <height>140</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -28,9 +28,9 @@
   <widget class="QPushButton" name="button_check">
    <property name="geometry">
     <rect>
-     <x>525</x>
-     <y>130</y>
-     <width>70</width>
+     <x>1070</x>
+     <y>100</y>
+     <width>50</width>
      <height>20</height>
     </rect>
    </property>
@@ -48,7 +48,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="label_code">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -69,14 +69,46 @@
     <string>Code</string>
    </property>
   </widget>
-  <widget class="QWidget" name="widget" native="true">
+  <widget class="QLabel" name="label_system1">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>10</x>
      <y>20</y>
-     <width>1058</width>
-     <height>31</height>
+     <width>47</width>
+     <height>13</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>SYS1</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_system2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>65</y>
+     <width>47</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>SYS2</string>
    </property>
   </widget>
  </widget>

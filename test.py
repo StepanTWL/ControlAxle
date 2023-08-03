@@ -1,32 +1,40 @@
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton
 
-class MyButton(QPushButton):
-    def __init__(self, x, y, parent):
-        super().__init__("", parent)
-        self.setGeometry(x, y, 10, 10)
-
-
-class MyWindow(QWidget):
+class MyCustomWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Пример кнопок PyQt6")
-        self.setGeometry(100, 100, 400, 200)
 
-        self.init_ui()
+        # Create a label
+        self.label = QLabel("Hello, I am a custom widget label!", self)
+        self.label.setGeometry(10, 10, 200, 30)  # Set the position and size of the label using absolute coordinates
 
-    def init_ui(self):
-        # Создаем первую кнопку через класс MyButton1
-        button1 = MyButton(50, 50, self)
+        # Create a QPushButton and connect its clicked signal to the on_button_click method
+        self.button = QPushButton("Click Me!", self)
+        self.button.setGeometry(10, 50, 100, 30)  # Set the position and size of the button using absolute coordinates
+        self.button.clicked.connect(self.on_button_click)
 
-        # Создаем вторую кнопку через класс MyButton2
-        button2 = MyButton(200, 100, self)
+    def on_button_click(self):
+        print("Button clicked!")
 
-def main():
-    app = QApplication(sys.argv)
-    window = MyWindow()
-    window.show()
-    sys.exit(app.exec())
+class MyMainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("PyQt6 Window")
+        self.setGeometry(100, 100, 400, 300)
+
+        # Create the custom widget
+        self.custom_widget = MyCustomWidget()
+        self.custom_widget.setParent(self)  # Set the main window as the parent of the custom widget
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+
+        # Set the geometry of the custom widget when the main window is resized
+        self.custom_widget.setGeometry(100, 100, 200, 100)
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    main_window = MyMainWindow()
+    main_window.show()
+    sys.exit(app.exec())
