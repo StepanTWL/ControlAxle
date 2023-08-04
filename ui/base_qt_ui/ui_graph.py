@@ -106,7 +106,7 @@ class Ui_Graph(object):
         _translate = QtCore.QCoreApplication.translate
         Graph.setWindowTitle(_translate("Graph", "Dialog"))
         self.button_check.setText(_translate("Graph", "Cheсk"))
-        self.lineEdit.setText(_translate("Graph", "red(1:0-800,0:800-1200,1:1200-2400,0:2400-3600,1:3600-4000);blue(1:0-800,0:800-1200,1:1200-2400,0:2400-3600,1:3600-4000)"))
+        self.lineEdit.setText(_translate("Graph", "red();blue()"))
         self.label_code.setText(_translate("Graph", "Code"))
         self.label_system1.setText(_translate("Graph", "SYS1"))
         self.label_system2.setText(_translate("Graph", "SYS2"))

@@ -62,7 +62,7 @@
     </font>
    </property>
    <property name="text">
-    <string>red(1:0-800,0:800-1200,1:1200-2400,0:2400-3600,1:3600-4000);blue(1:0-800,0:800-1200,1:1200-2400,0:2400-3600,1:3600-4000)</string>
+    <string>red();blue()</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_code">

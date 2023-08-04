@@ -17,6 +17,7 @@ class System(QWidget):
         self.buttons = []
         self.end = 0
         self.level = 0
+        self.dicct = {}
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(10)
@@ -68,10 +69,54 @@ class System(QWidget):
             self.level = row
 
     def buttons_reset(self):
+        self.get_data()
         for i in range(col_base * row_base):
             self.buttons[i].setStyleSheet(f"background-color: white")
         self.end = 0
         self.level = 0
+
+    def get_data(self):
+        for row in range(0, row_base, 5):
+            for col in range(col_base):
+                if self.buttons[col + row * col_base].palette().button().color().name() != '#ffffff':
+                    if col in self.dicct:
+                        self.dicct[col] += row // 5 + 1
+                    else:
+                        self.dicct[col] = row // 5 + 1
+        return self.convert_dict_to_str()
+
+    def convert_dict_to_str(self):
+        str = ''
+        start = None
+        end = None
+        for key in self.dicct.keys():
+            if self.dicct[key] == 1:
+                if start == None:
+                    start = key
+                if key == col_base - 1:
+                    end = key
+                    str += f'0:{start}-{end},'
+            elif self.dicct[key] == 3:
+                end = key
+                str += f'0:{start}-{end},'
+                start = end
+                continue
+            if self.dicct[key] == 2:
+                if start == None:
+                    start = key
+                if key == col_base - 1:
+                    end = key
+                    str += f'1:{start}-{end},'
+            elif self.dicct[key] == 3:
+                end = key
+                str += f'1:{start}-{end},'
+                start = end
+                continue
+        self.dicct.clear()
+        return str[:-1]
+
+
+
 
 
 class Graph(QtWidgets.QMainWindow):
@@ -94,7 +139,9 @@ class Graph(QtWidgets.QMainWindow):
         self.system2.setGeometry(60, 85, 1060, 30)
 
     def buttons_check(self):
-        pass
+        str1 = self.system1.get_data()
+        str2 = self.system2.get_data()
+        self.ui.lineEdit.setText(f"red({str1});blue({str2})")
 
 
 if __name__ == '__main__':
