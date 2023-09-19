@@ -82,38 +82,60 @@ class System(QWidget):
                     if col in self.dicct:
                         self.dicct[col] += row // 5 + 1
                     else:
-                        self.dicct[col] = row // 5 + 1
+                        self.dicct[col] = row // 5
         return self.convert_dict_to_str()
 
     def convert_dict_to_str(self):
         str = ''
         start = None
         end = None
-        for key in self.dicct.keys():
-            if self.dicct[key] == 1:
+        for key in range(len(self.dicct)):
+            if self.dicct[key] == 0:
                 if start == None:
                     start = key
+                    if key == col_base - 1:
+                        str += f'0:{key}; '
                 if key == col_base - 1:
                     end = key
-                    str += f'0:{start}-{end},'
-            elif self.dicct[key] == 3:
-                end = key
-                str += f'0:{start}-{end},'
-                start = end
-                continue
-            if self.dicct[key] == 2:
+                    if start == end:
+                        str += f'0:{start}; '
+                    else:
+                        str += f'0:{start}-{end}; '
+            elif self.dicct[key] == 1:
                 if start == None:
                     start = key
+                    if key == col_base - 1:
+                        str += f'1:{key}; '
                 if key == col_base - 1:
                     end = key
-                    str += f'1:{start}-{end},'
-            elif self.dicct[key] == 3:
-                end = key
-                str += f'1:{start}-{end},'
-                start = end
-                continue
+                    if start == end:
+                        str += f'1:{start}; '
+                    else:
+                        str += f'1:{start}-{end}; '
+            elif self.dicct[key] == 2:
+                if start == None:
+                    start = key
+                elif key != 0:
+                    end = key - 1
+                if self.dicct[end] == 0:
+                    if start == end:
+                        str += f'0:{start}; '
+                    else:
+                        str += f'0:{start}-{end}; '
+                    if key != col_base - 1:
+                        start = key + 1
+                elif self.dicct[end] == 1:
+                    if start == end:
+                        str += f'1:{start}; '
+                    else:
+                        str += f'1:{start}-{end}; '
+                    if key != col_base - 1:
+                        start = key + 1
+                str += f'2:{key}; '
+                
+                
         self.dicct.clear()
-        return str[:-1]
+        return str[:-2]
 
 
 
