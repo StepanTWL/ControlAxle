@@ -29,9 +29,9 @@
    <property name="geometry">
     <rect>
      <x>1070</x>
-     <y>130</y>
+     <y>163</y>
      <width>50</width>
-     <height>61</height>
+     <height>27</height>
     </rect>
    </property>
    <property name="font">
@@ -156,6 +156,9 @@
    </property>
    <property name="value">
     <number>20</number>
+   </property>
+   <property name="displayIntegerBase">
+    <number>10</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_config_2">
@@ -328,7 +331,30 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;SYS1();SYS2()&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="placeholderText">
+    <string>Example: SYS1(0:1000us;   1:2500us;  0:4000us);   SYS2(0:1300us;   1:2800us;  0:4000us)                                                                                                        Example: SYS1(0:d1000us; 1:d1500us; 0:d1500us); SYS2(0:d1300us; 1:d1500us; 0:d1200us)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_trans">
+   <property name="geometry">
+    <rect>
+     <x>1070</x>
+     <y>130</y>
+     <width>51</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Trans</string>
    </property>
   </widget>
  </widget>
