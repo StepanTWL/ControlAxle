@@ -81,7 +81,7 @@ class System(QWidget):
 			for col in range(col_base):
 				if self.buttons[col + row * col_base].palette().button().color().name() != '#ffffff':
 					if col in self.dicct:
-						self.dicct[col] += row // 5 ^ 1 + 1
+						self.dicct[col] += ((row // 5) ^ 1) + 1
 					else:
 						self.dicct[col] = (row // 5) ^ 1
 		return self.convert_dict_to_str()
@@ -141,13 +141,15 @@ class Graph(QtWidgets.QMainWindow):
 
 	def form_mass_data(self, str):
 		sys_array = []
-		count_ex = max(str.count('us'), str.count('µs'))
+		str = str.replace('u', 'µ').replace(' ', '').replace(';', '')
+		count_ex = str.count('µs')
 		for _ in range(count_ex):
 			sys_value = int(str[str.find(':') - 1])
-			sys_count = int(str[str.find(':') + 1:max(str.find('us'), str.find('µs'))])
+			sys_count = int(str[str.find(':') + 1:str.find('µs')])
 			for _ in range(sys_count//20):
 				sys_array.append(sys_value)
-			str = str[str.find('us')+2:]
+			str = str[str.find('µs')+2:]
+		pass
 
 # 0:1000us1:2500us0:4000us
 
