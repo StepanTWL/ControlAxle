@@ -18,7 +18,7 @@ class System(QWidget):
 		self.end = 0
 		self.level = 0
 		self.dicct = {}
-		self.time = 10
+		self.time = 20
 		font = QtGui.QFont()
 		font.setFamily("Arial")
 		font.setPointSize(10)
@@ -141,14 +141,16 @@ class Graph(QtWidgets.QMainWindow):
 
 	def form_mass_data(self, str):
 		sys_array = []
+		last = 0
 		str = str.replace('u', 'µ').replace(' ', '').replace(';', '')
 		count_ex = str.count('µs')
 		for _ in range(count_ex):
 			sys_value = int(str[str.find(':') - 1])
 			sys_count = int(str[str.find(':') + 1:str.find('µs')])
-			for _ in range(sys_count//20):
+			for __ in range(last//int(self.ui.spinBox.text()), sys_count//int(self.ui.spinBox.text())):
 				sys_array.append(sys_value)
 			str = str[str.find('µs')+2:]
+			last = sys_count
 		pass
 
 # 0:1000us1:2500us0:4000us
