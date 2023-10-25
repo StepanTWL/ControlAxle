@@ -106,6 +106,7 @@ class System(QWidget):
 		self.time = value
 
 
+
 class Graph(QtWidgets.QMainWindow):
 
 	def __init__(self):
@@ -115,6 +116,9 @@ class Graph(QtWidgets.QMainWindow):
 		self.end = 0
 		self.level = 0
 		self.str = ''
+		self.sys_array1 = []
+		self.sys_array2 = []
+		self.count_axle = 0
 		self.system1 = System('red')
 		self.system1.setParent(self)
 		self.system2 = System('blue')
@@ -136,21 +140,89 @@ class Graph(QtWidgets.QMainWindow):
 			self.ui.textEdit.setText(self.str)
 		else:
 			self.ui.textEdit.setText('')
-		self.form_mass_data(str1)
-		self.form_mass_data(str2)
+		self.form_mass_data(self.sys_array1, str1)
+		self.form_mass_data(self.sys_array2, str2)
+		self.find_axle(self.sys_array1, self.sys_array2, len(self.sys_array1))
 
-	def form_mass_data(self, str):
-		sys_array = []
+	def form_mass_data(self, sys_array, str):
 		last = 0
 		str = str.replace('u', 'µ').replace(' ', '').replace(';', '')
 		count_ex = str.count('µs')
 		for _ in range(count_ex):
 			sys_value = int(str[str.find(':') - 1])
 			sys_count = int(str[str.find(':') + 1:str.find('µs')])
-			for __ in range(last//int(self.ui.spinBox.text()), sys_count//int(self.ui.spinBox.text())):
+			for __ in range(last//20, sys_count//20):
 				sys_array.append(sys_value)
 			str = str[str.find('µs')+2:]
 			last = sys_count
+		pass
+
+	def find_axle(self, mass1, mass2, size: int):
+		count_type1_p = 0
+		count_type2_p = 0
+		count_type3_p = 0
+		count_type1_m = 0
+		count_type2_m = 0
+		count_type3_m = 0
+		length_single = 50
+		length_both = 10
+		length_alone = 10
+
+		for i in range(size):
+			if mass1[i] == 0 and mass2[i] == 1 and count_type1_m < length_single:
+				count_type1_m = 0
+				count_type2_m = 0
+				count_type3_m = 0
+				if count_type1_p < length_alone:
+					count_type1_p += 1
+			elif mass1[i] == 1 and mass2[i] == 0 and count_type1_p < length_single:
+				count_type1_p = 0
+				count_type2_p = 0
+				count_type3_p = 0
+				if count_type1_m < length_alone:
+					count_type1_m += 1
+			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_p >= length_single and count_type3_p == 0:
+				count_type1_m = 0
+				count_type2_m = 0
+				count_type3_m = 0
+				if count_type2_p < length_both:
+					count_type2_p += 1
+			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_m >= length_single and count_type3_m == 0:
+				count_type1_p = 0
+				count_type2_p = 0
+				count_type3_p = 0
+				if count_type2_m < length_both:
+					count_type2_m += 1
+			elif mass1[i] == 1 and mass2[i] == 0 and count_type2_p >= length_both and count_type1_p >= length_single:
+				count_type1_m = 0
+				count_type2_m = 0
+				count_type3_m = 0
+				if count_type3_p < length_single:
+					count_type3_p += 1
+				if count_type3_p >= length_single:
+					self.count_axle += 1
+					count_type1_p = 0
+					count_type2_p = 0
+					count_type3_p = 0
+			elif mass1[i] == 0 and mass2[i] == 1 and count_type2_m >= length_both and count_type1_m >= length_single:
+				count_type1_p = 0
+				count_type2_p = 0
+				count_type3_p = 0
+				if count_type3_m < length_single:
+					count_type3_m += 1
+				if count_type3_m >= length_single:
+					self.count_axle -= 1
+					count_type1_m = 0
+					count_type2_m = 0
+					count_type3_m = 0
+			else:
+				count_type1_p = 0
+				count_type2_p = 0
+				count_type3_p = 0
+				count_type1_m = 0
+				count_type2_m = 0
+				count_type3_m = 0
+		self.ui.lineEdit_2.setText(str(self.count_axle))
 		pass
 
 # 0:1000us1:2500us0:4000us
