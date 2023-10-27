@@ -357,6 +357,27 @@ p, li { white-space: pre-wrap; }
     <string>Trans</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="button_reset_count">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>200</y>
+     <width>50</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>8</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

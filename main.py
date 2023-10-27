@@ -119,11 +119,14 @@ class Graph(QtWidgets.QMainWindow):
 		self.sys_array1 = []
 		self.sys_array2 = []
 		self.count_axle = 0
+		self.count_sys1 = 0
+		self.count_sys2 = 0
 		self.system1 = System('red')
 		self.system1.setParent(self)
 		self.system2 = System('blue')
 		self.system2.setParent(self)
 		self.ui.button_trans.clicked.connect(self.buttons_trans)
+		self.ui.button_reset_count.clicked.connect(self.button_reset_count)
 
 	def resizeEvent(self, event) -> None:
 		super().resizeEvent(event)
@@ -143,6 +146,16 @@ class Graph(QtWidgets.QMainWindow):
 		self.form_mass_data(self.sys_array1, str1)
 		self.form_mass_data(self.sys_array2, str2)
 		self.find_axle(self.sys_array1, self.sys_array2, len(self.sys_array1))
+		self.sys_array1.clear()
+		self.sys_array2.clear()
+
+	def button_reset_count(self):
+		self.count_axle = 0
+		self.count_sys1 = 0
+		self.count_sys2 = 0
+		self.ui.lineEdit_2.setText(str(self.count_axle))
+		self.ui.lineEdit_3.setText(str(self.count_sys1))
+		self.ui.lineEdit_4.setText(str(self.count_sys2))
 
 	def form_mass_data(self, sys_array, str):
 		last = 0
@@ -169,48 +182,42 @@ class Graph(QtWidgets.QMainWindow):
 		length_alone = 10
 
 		for i in range(size):
-			if mass1[i] == 0 and mass2[i] == 1 and count_type1_m < length_single:
+			if mass1[i] == 0 and mass2[i] == 1 and (count_type1_m + count_type2_m) < length_single:
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
-				if count_type1_p < length_alone:
-					count_type1_p += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and count_type1_p < length_single:
+				count_type1_p += 1
+			elif mass1[i] == 1 and mass2[i] == 0 and (count_type1_p + count_type2_p) < length_single:
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
-				if count_type1_m < length_alone:
-					count_type1_m += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_p >= length_single and count_type3_p == 0:
+				count_type1_m += 1
+			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_p >= length_alone and count_type3_p == 0:
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
-				if count_type2_p < length_both:
-					count_type2_p += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_m >= length_single and count_type3_m == 0:
+				count_type2_p += 1
+			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_m >= length_alone and count_type3_m == 0:
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
-				if count_type2_m < length_both:
-					count_type2_m += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and count_type2_p >= length_both and count_type1_p >= length_single:
+				count_type2_m += 1
+			elif mass1[i] == 1 and mass2[i] == 0 and count_type2_p >= length_both and (count_type1_p + count_type2_p) >= length_single:
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
-				if count_type3_p < length_single:
-					count_type3_p += 1
-				if count_type3_p >= length_single:
+				count_type3_p += 1
+				if (count_type2_p + count_type3_p) >= length_single:
 					self.count_axle += 1
 					count_type1_p = 0
 					count_type2_p = 0
 					count_type3_p = 0
-			elif mass1[i] == 0 and mass2[i] == 1 and count_type2_m >= length_both and count_type1_m >= length_single:
+			elif mass1[i] == 0 and mass2[i] == 1 and count_type2_m >= length_both and (count_type1_m + count_type2_m) >= length_single:
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
-				if count_type3_m < length_single:
-					count_type3_m += 1
-				if count_type3_m >= length_single:
+				count_type3_m += 1
+				if (count_type2_m + count_type3_m) >= length_single:
 					self.count_axle -= 1
 					count_type1_m = 0
 					count_type2_m = 0
