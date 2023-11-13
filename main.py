@@ -232,8 +232,8 @@ class Graph(QtWidgets.QMainWindow):
 		self.ui.lineEdit_2.setText(str(self.count_axle))
 		pass
 
-# 0:1000us1:2500us0:4000us
 
+# 0:1000us1:2500us0:4000us
 
 # SYS1(0:1000us;  1:2500us;  0:4000us);SYS2(0:1300us;   1:2800us;  0:4000us)
 # SYS1(0:d1000us; 1:d1500us; 0:d1500us);SYS2(0:d1300us; 1:d1500us; 0:d1200us)
