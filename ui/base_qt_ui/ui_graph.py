@@ -73,6 +73,7 @@ class Ui_Graph(object):
         font.setFamily("Arial")
         font.setPointSize(11)
         font.setBold(False)
+        font.setWeight(50)
         self.label_config_2.setFont(font)
         self.label_config_2.setObjectName("label_config_2")
         self.label_code_2 = QtWidgets.QLabel(parent=Graph)
@@ -145,6 +146,8 @@ class Ui_Graph(object):
         font.setBold(True)
         self.button_reset_count.setFont(font)
         self.button_reset_count.setObjectName("button_reset_count")
+        self.label = QtWidgets.QLabel(parent=Graph)
+        self.label.setGeometry(QtCore.QRect(107, 61, 47, 31))
 
         self.retranslateUi(Graph)
         QtCore.QMetaObject.connectSlotsByName(Graph)

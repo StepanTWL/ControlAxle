@@ -116,16 +116,21 @@ class Graph(QtWidgets.QMainWindow):
 		self.end = 0
 		self.level = 0
 		self.str = ''
+		self.str1 = ''
+		self.str2 = ''
 		self.sys_array1 = []
 		self.sys_array2 = []
 		self.count_axle = 0
 		self.count_sys1 = 0
 		self.count_sys2 = 0
+		self.count_sys1_lock = False
+		self.count_sys1_lock = False
 		self.system1 = System('red')
 		self.system1.setParent(self)
 		self.system2 = System('blue')
 		self.system2.setParent(self)
 		self.ui.button_trans.clicked.connect(self.buttons_trans)
+		self.ui.button_check.clicked.connect(self.buttons_check)
 		self.ui.button_reset_count.clicked.connect(self.button_reset_count)
 
 	def resizeEvent(self, event) -> None:
@@ -136,16 +141,21 @@ class Graph(QtWidgets.QMainWindow):
 	def buttons_trans(self):
 		self.system1.set_time_step(int(self.ui.spinBox.text()))
 		self.system2.set_time_step(int(self.ui.spinBox.text()))
-		str1 = self.system1.get_data()
-		str2 = self.system2.get_data()
-		self.str = f"SYS1({str1}); SYS2({str2})"
+		self.str1 = self.system1.get_data()
+		self.str2 = self.system2.get_data()
+		self.str = f"SYS1({self.str1}); SYS2({self.str2})"
 		if self.str != "SYS1(); SYS2()":
 			self.ui.textEdit.setText(self.str)
 		else:
 			self.ui.textEdit.setText('')
-		self.form_mass_data(self.sys_array1, str1)
-		self.form_mass_data(self.sys_array2, str2)
-		self.find_axle(self.sys_array1, self.sys_array2, len(self.sys_array1))
+
+	def buttons_check(self):
+		tmp = self.ui.textEdit.toPlainText()
+		self.str1 = tmp[tmp.find('(') + 1:tmp.find(')')]
+		self.str2 = tmp[tmp.rfind('(') + 1:tmp.rfind(')')]
+		self.form_mass_data(self.sys_array1, self.str1)
+		self.form_mass_data(self.sys_array2, self.str2)
+		self.find_axle(self.sys_array1, self.sys_array2, min(len(self.sys_array1), len(self.sys_array2)))
 		self.sys_array1.clear()
 		self.sys_array2.clear()
 
@@ -177,59 +187,84 @@ class Graph(QtWidgets.QMainWindow):
 		count_type1_m = 0
 		count_type2_m = 0
 		count_type3_m = 0
-		length_single = 50
-		length_both = 10
-		length_alone = 10
+		count_sys1 = 0
+		count_sys2 = 0
+		length_single = 20
+		length_both = 30
 
 		for i in range(size):
-			if mass1[i] == 0 and mass2[i] == 1 and (count_type1_m + count_type2_m) < length_single:
+			if mass1[i] == 0 and mass2[i] == 1 and count_type1_m < length_single:
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
 				count_type1_p += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and (count_type1_p + count_type2_p) < length_single:
+			elif mass1[i] == 1 and mass2[i] == 0 and count_type1_p < length_single:
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
 				count_type1_m += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_p >= length_alone and count_type3_p == 0:
+			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_p >= length_single and count_type3_p == 0:
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
 				count_type2_p += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_m >= length_alone and count_type3_m == 0:
+			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_m >= length_single and count_type3_m == 0:
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
 				count_type2_m += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and count_type2_p >= length_both and (count_type1_p + count_type2_p) >= length_single:
+			elif mass1[i] == 1 and mass2[i] == 0 and count_type2_p >= length_both and count_type1_p >= length_single:
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
 				count_type3_p += 1
-				if (count_type2_p + count_type3_p) >= length_single:
-					self.count_axle += 1
-					count_type1_p = 0
-					count_type2_p = 0
-					count_type3_p = 0
-			elif mass1[i] == 0 and mass2[i] == 1 and count_type2_m >= length_both and (count_type1_m + count_type2_m) >= length_single:
+			elif mass1[i] == 0 and mass2[i] == 1 and count_type2_m >= length_both and count_type1_m >= length_single:
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
 				count_type3_m += 1
-				if (count_type2_m + count_type3_m) >= length_single:
-					self.count_axle -= 1
-					count_type1_m = 0
-					count_type2_m = 0
-					count_type3_m = 0
 			else:
+				if count_type3_p >= length_single:
+					self.count_axle += 1
+				elif count_type3_m >= length_single:
+					self.count_axle -= 1
 				count_type1_p = 0
 				count_type2_p = 0
 				count_type3_p = 0
 				count_type1_m = 0
 				count_type2_m = 0
 				count_type3_m = 0
+			if mass1[i] == 0:
+				count_sys1 += 1
+				if count_sys1 >= (length_single + length_both) and not self.count_sys1_lock:
+					self.count_sys1 += 1
+					self.count_sys1_lock = True
+			else:
+				count_sys1 = 0
+				self.count_sys1_lock = False
+			if mass2[i] == 0:
+				count_sys2 += 1
+				if count_sys2 >= (length_single + length_both) and not self.count_sys2_lock:
+					self.count_sys2 += 1
+					self.count_sys2_lock = True
+			else:
+				count_sys2 = 0
+				self.count_sys2_lock = False
+		if count_type3_p >= length_single:
+			self.count_axle += 1
+		elif count_type3_m >= length_single:
+			self.count_axle -= 1
+		count_type1_p = 0
+		count_type2_p = 0
+		count_type3_p = 0
+		count_type1_m = 0
+		count_type2_m = 0
+		count_type3_m = 0
+		self.count_sys1_lock = False
+		self.count_sys2_lock = False
 		self.ui.lineEdit_2.setText(str(self.count_axle))
+		self.ui.lineEdit_3.setText(str(self.count_sys1))
+		self.ui.lineEdit_4.setText(str(self.count_sys2))
 		pass
 
 
@@ -238,6 +273,8 @@ class Graph(QtWidgets.QMainWindow):
 # SYS1(0:1000us;  1:2500us;  0:4000us);SYS2(0:1300us;   1:2800us;  0:4000us)
 # SYS1(0:d1000us; 1:d1500us; 0:d1500us);SYS2(0:d1300us; 1:d1500us; 0:d1200us)
 
+#SYS1(1:4100µs; 0:6400µs; 1:7700µs; 0:9900µs; 1:12100µs; 0:13600µs; 1:20000µs); SYS2(1:5100µs; 0:14400µs; 1:20000µs)
+#SYS1(1:4100µs; 0:6400µs; 1:7900µs; 0:9500µs; 1:10600µs; 0:11900µs; 1:12800µs; 0:15000µs; 1:20000µs); SYS2(1:5200µs; 0:14000µs; 1:20000µs)
 
 if __name__ == '__main__':
 	app = QtWidgets.QApplication(sys.argv)
