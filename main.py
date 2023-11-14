@@ -2,7 +2,7 @@ import sys
 
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtWidgets import QPushButton, QWidget
-
+from matplotlib import colors
 from ui.base_qt_ui.ui_graph import Ui_Graph
 
 row_base = 6
@@ -45,11 +45,19 @@ class System(QWidget):
 
 	def change_button_color(self):
 		button = app.focusWidget()
+		color = button.palette().button().color().name()
+		if color == self.color_name_to_hex('red') or color == self.color_name_to_hex('blue'):
+			return
 		if button.palette().button().color().name() != '#ffffff':
 			button.setStyleSheet(f"background-color: {self.color.name()};")
 		else:
 			button.setStyleSheet("background-color: white")
 		self.draw_hor_line(button.objectName())
+
+	def color_name_to_hex(self, color_name):
+		rgb_tuple = colors.to_rgba(color_name)[:3]
+		hex_color = colors.to_hex(rgb_tuple)
+		return hex_color
 
 	def draw_hor_line(self, name: str):
 		number = int(name[-4:])
@@ -106,27 +114,13 @@ class System(QWidget):
 		self.time = value
 
 
-
 class Graph(QtWidgets.QMainWindow):
 
 	def __init__(self):
 		super().__init__()
 		self.ui = Ui_Graph()
 		self.ui.setupUi(self)
-		self.end = 0
-		self.level = 0
-		self.str = ''
-		self.str1 = ''
-		self.str2 = ''
-		self.sys_array1 = []
-		self.sys_array2 = []
-		self.count_axle = 0
-		self.count_sys1 = 0
-		self.count_sys2 = 0
-		self.count_axle_lock = False
-		self.count_sys1_lock = False
-		self.count_sys1_lock = False
-		self.count_axle_start = False
+		self.find_axle = FindAxle()
 		self.system1 = System('red')
 		self.system1.setParent(self)
 		self.system2 = System('blue')
@@ -153,13 +147,13 @@ class Graph(QtWidgets.QMainWindow):
 
 	def buttons_check(self):
 		tmp = self.ui.textEdit.toPlainText()
-		self.str1 = tmp[tmp.find('(') + 1:tmp.find(')')]
-		self.str2 = tmp[tmp.rfind('(') + 1:tmp.rfind(')')]
-		self.form_mass_data(self.sys_array1, self.str1)
-		self.form_mass_data(self.sys_array2, self.str2)
-		self.find_axle(self.sys_array1, self.sys_array2, min(len(self.sys_array1), len(self.sys_array2)))
-		self.sys_array1.clear()
-		self.sys_array2.clear()
+		self.find_axle.work_find_axle(tmp)
+		self.count_axle = self.find_axle.get_count_axle()
+		self.count_sys1 = self.find_axle.get_count_sys1()
+		self.count_sys2 = self.find_axle.get_count_sys2()
+		self.ui.lineEdit_2.setText(str(self.count_axle))
+		self.ui.lineEdit_3.setText(str(self.count_sys1))
+		self.ui.lineEdit_4.setText(str(self.count_sys2))
 
 	def button_reset_count(self):
 		self.count_axle = 0
@@ -168,6 +162,42 @@ class Graph(QtWidgets.QMainWindow):
 		self.ui.lineEdit_2.setText(str(self.count_axle))
 		self.ui.lineEdit_3.setText(str(self.count_sys1))
 		self.ui.lineEdit_4.setText(str(self.count_sys2))
+		self.find_axle.reset()
+
+
+class FindAxle:
+
+	def __init__(self):
+		super().__init__()
+		self.str = ''
+		self.str1 = ''
+		self.str2 = ''
+		self.sys_array1 = []
+		self.sys_array2 = []
+		self.count_axle = 0
+		self.count_sys1 = 0
+		self.count_sys2 = 0
+		self.detect_sys1 = 0
+		self.detect_sys2 = 0
+		self.count_axle_lock = False
+		self.count_sys1_lock = False
+		self.count_sys1_lock = False
+		self.count_axle_start = False
+		self.count_type1_p = 0
+		self.count_type2_p = 0
+		self.count_type3_p = 0
+		self.count_type1_m = 0
+		self.count_type2_m = 0
+		self.count_type3_m = 0
+
+	def work_find_axle(self, data: str):
+		self.str1 = data[data.find('(') + 1:data.find(')')]
+		self.str2 = data[data.rfind('(') + 1:data.rfind(')')]
+		self.form_mass_data(self.sys_array1, self.str1)
+		self.form_mass_data(self.sys_array2, self.str2)
+		self.find_axle(self.sys_array1, self.sys_array2, min(len(self.sys_array1), len(self.sys_array2)))
+		self.sys_array1.clear()
+		self.sys_array2.clear()
 
 	def form_mass_data(self, sys_array, str):
 		last = 0
@@ -176,105 +206,121 @@ class Graph(QtWidgets.QMainWindow):
 		for _ in range(count_ex):
 			sys_value = int(str[str.find(':') - 1])
 			sys_count = int(str[str.find(':') + 1:str.find('µs')])
-			for __ in range(last//20, sys_count//20):
+			for __ in range(last // 20, sys_count // 20):
 				sys_array.append(sys_value)
-			str = str[str.find('µs')+2:]
+			str = str[str.find('µs') + 2:]
 			last = sys_count
 		pass
 
+	def reset(self):
+		self.str = ''
+		self.str1 = ''
+		self.str2 = ''
+		self.sys_array1 = []
+		self.sys_array2 = []
+		self.count_axle = 0
+		self.count_sys1 = 0
+		self.count_sys2 = 0
+		self.detect_sys1 = 0
+		self.detect_sys2 = 0
+		self.count_axle_lock = False
+		self.count_sys1_lock = False
+		self.count_sys1_lock = False
+		self.count_axle_start = False
+		self.count_type1_p = 0
+		self.count_type2_p = 0
+		self.count_type3_p = 0
+		self.count_type1_m = 0
+		self.count_type2_m = 0
+		self.count_type3_m = 0
+
 	def find_axle(self, mass1, mass2, size: int):
-		count_type1_p = 0
-		count_type2_p = 0
-		count_type3_p = 0
-		count_type1_m = 0
-		count_type2_m = 0
-		count_type3_m = 0
-		count_sys1 = 0
-		count_sys2 = 0
 		length_single = 20
 		length_both = 30
 
 		for i in range(size):
 			if mass1[i] == 1 and mass2[i] == 1:
 				self.count_axle_start = True
-			if mass1[i] == 0 and mass2[i] == 1 and count_type1_m < length_single and self.count_axle_start:
-				count_type1_m = 0
-				count_type2_m = 0
-				count_type3_m = 0
-				count_type1_p += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and count_type1_p < length_single and self.count_axle_start:
-				count_type1_p = 0
-				count_type2_p = 0
-				count_type3_p = 0
-				count_type1_m += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_p >= length_single and count_type3_p == 0 and self.count_axle_start:
-				count_type1_m = 0
-				count_type2_m = 0
-				count_type3_m = 0
-				count_type2_p += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and count_type1_m >= length_single and count_type3_m == 0 and self.count_axle_start:
-				count_type1_p = 0
-				count_type2_p = 0
-				count_type3_p = 0
-				count_type2_m += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and count_type2_p >= length_both and count_type1_p >= length_single and self.count_axle_start:
-				count_type1_m = 0
-				count_type2_m = 0
-				count_type3_m = 0
-				count_type3_p += 1
-			elif mass1[i] == 0 and mass2[i] == 1 and count_type2_m >= length_both and count_type1_m >= length_single and self.count_axle_start:
-				count_type1_p = 0
-				count_type2_p = 0
-				count_type3_p = 0
-				count_type3_m += 1
+			if mass1[i] == 0 and mass2[i] == 1 and self.count_type1_m < length_single and self.count_axle_start:
+				self.count_type1_m = 0
+				self.count_type2_m = 0
+				self.count_type3_m = 0
+				self.count_type1_p += 1
+			elif mass1[i] == 1 and mass2[i] == 0 and self.count_type1_p < length_single and self.count_axle_start:
+				self.count_type1_p = 0
+				self.count_type2_p = 0
+				self.count_type3_p = 0
+				self.count_type1_m += 1
+			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type1_p >= length_single and self.count_type3_p == 0 and self.count_axle_start:
+				self.count_type1_m = 0
+				self.count_type2_m = 0
+				self.count_type3_m = 0
+				self.count_type2_p += 1
+			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type1_m >= length_single and self.count_type3_m == 0 and self.count_axle_start:
+				self.count_type1_p = 0
+				self.count_type2_p = 0
+				self.count_type3_p = 0
+				self.count_type2_m += 1
+			elif mass1[i] == 1 and mass2[i] == 0 and self.count_type2_p >= length_both and self.count_type1_p >= length_single and self.count_axle_start:
+				self.count_type1_m = 0
+				self.count_type2_m = 0
+				self.count_type3_m = 0
+				self.count_type3_p += 1
+			elif mass1[i] == 0 and mass2[i] == 1 and self.count_type2_m >= length_both and self.count_type1_m >= length_single and self.count_axle_start:
+				self.count_type1_p = 0
+				self.count_type2_p = 0
+				self.count_type3_p = 0
+				self.count_type3_m += 1
 			else:
-				count_type1_p = 0
-				count_type2_p = 0
-				count_type3_p = 0
-				count_type1_m = 0
-				count_type2_m = 0
-				count_type3_m = 0
+				self.count_type1_p = 0
+				self.count_type2_p = 0
+				self.count_type3_p = 0
+				self.count_type1_m = 0
+				self.count_type2_m = 0
+				self.count_type3_m = 0
 				self.count_axle_lock = False
-			if count_type3_p >= length_single and not self.count_axle_lock:
+			if self.count_type3_p >= length_single and not self.count_axle_lock and mass2[i] == 1:
 				self.count_axle += 1
 				self.count_axle_lock = True
 				self.count_axle_start = False
-			if count_type3_m >= length_single and not self.count_axle_lock:
+			if self.count_type3_m >= length_single and not self.count_axle_lock and mass1[i] == 1:
 				self.count_axle -= 1
 				self.count_axle_lock = True
 				self.count_axle_start = False
 			if mass1[i] == 0:
-				count_sys1 += 1
-				if count_sys1 >= (length_single + length_both) and not self.count_sys1_lock:
+				self.detect_sys1 += 1
+				if self.detect_sys1 >= (length_single + length_both) and not self.count_sys1_lock:
 					self.count_sys1 += 1
 					self.count_sys1_lock = True
 			else:
-				count_sys1 = 0
+				self.detect_sys1 = 0
 				self.count_sys1_lock = False
 			if mass2[i] == 0:
-				count_sys2 += 1
-				if count_sys2 >= (length_single + length_both) and not self.count_sys2_lock:
+				self.detect_sys2 += 1
+				if self.detect_sys2 >= (length_single + length_both) and not self.count_sys2_lock:
 					self.count_sys2 += 1
 					self.count_sys2_lock = True
 			else:
-				count_sys2 = 0
+				self.detect_sys2 = 0
 				self.count_sys2_lock = False
-		if count_type3_p >= length_single:
-			self.count_axle += 1
-		elif count_type3_m >= length_single:
-			self.count_axle -= 1
-		count_type1_p = 0
-		count_type2_p = 0
-		count_type3_p = 0
-		count_type1_m = 0
-		count_type2_m = 0
-		count_type3_m = 0
+		self.count_type1_p = 0
+		self.count_type2_p = 0
+		self.count_type3_p = 0
+		self.count_type1_m = 0
+		self.count_type2_m = 0
+		self.count_type3_m = 0
 		self.count_sys1_lock = False
 		self.count_sys2_lock = False
-		self.ui.lineEdit_2.setText(str(self.count_axle))
-		self.ui.lineEdit_3.setText(str(self.count_sys1))
-		self.ui.lineEdit_4.setText(str(self.count_sys2))
 		pass
+
+	def get_count_axle(self):
+		return self.count_axle
+
+	def get_count_sys1(self):
+		return self.count_sys1
+
+	def get_count_sys2(self):
+		return self.count_sys2
 
 
 # 0:1000us1:2500us0:4000us
@@ -282,8 +328,9 @@ class Graph(QtWidgets.QMainWindow):
 # SYS1(0:1000us;  1:2500us;  0:4000us);SYS2(0:1300us;   1:2800us;  0:4000us)
 # SYS1(0:d1000us; 1:d1500us; 0:d1500us);SYS2(0:d1300us; 1:d1500us; 0:d1200us)
 
-#SYS1(1:4100µs; 0:6400µs; 1:7700µs; 0:9900µs; 1:12100µs; 0:13600µs; 1:20000µs); SYS2(1:5100µs; 0:14400µs; 1:20000µs)
-#SYS1(1:4100µs; 0:6400µs; 1:7900µs; 0:9500µs; 1:10600µs; 0:11900µs; 1:12800µs; 0:15000µs; 1:20000µs); SYS2(1:5200µs; 0:14000µs; 1:20000µs)
+# SYS1(1:4100µs; 0:6400µs; 1:7700µs; 0:9900µs; 1:12100µs; 0:13600µs; 1:20000µs); SYS2(1:5100µs; 0:14400µs; 1:20000µs)
+# SYS1(1:4100µs; 0:6400µs; 1:7900µs; 0:9500µs; 1:10600µs; 0:11900µs; 1:12800µs; 0:15000µs; 1:20000µs); SYS2(1:5200µs; 0:14000µs; 1:20000µs)
+
 
 if __name__ == '__main__':
 	app = QtWidgets.QApplication(sys.argv)
