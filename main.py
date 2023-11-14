@@ -239,34 +239,38 @@ class FindAxle:
 		length_both = 30
 
 		for i in range(size):
-			if mass1[i] == 1 and mass2[i] == 1:
-				self.count_axle_start = True
-			if mass1[i] == 0 and mass2[i] == 1 and self.count_type1_m < length_single and self.count_axle_start:
+			if mass1[i] == 0 and mass2[i] == 1 and self.count_type1_m < length_single:
 				self.count_type1_m = 0
 				self.count_type2_m = 0
 				self.count_type3_m = 0
 				self.count_type1_p += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and self.count_type1_p < length_single and self.count_axle_start:
+			elif mass1[i] == 1 and mass2[i] == 0 and self.count_type1_p < length_single:
 				self.count_type1_p = 0
 				self.count_type2_p = 0
 				self.count_type3_p = 0
 				self.count_type1_m += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type1_p >= length_single and self.count_type3_p == 0 and self.count_axle_start:
+			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type1_p >= length_single and self.count_type3_p == 0:
 				self.count_type1_m = 0
 				self.count_type2_m = 0
 				self.count_type3_m = 0
 				self.count_type2_p += 1
-			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type1_m >= length_single and self.count_type3_m == 0 and self.count_axle_start:
+			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type3_p:
+				self.count_type2_p = 1
+				self.count_type3_p = 0
+			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type1_m >= length_single and self.count_type3_m == 0:
 				self.count_type1_p = 0
 				self.count_type2_p = 0
 				self.count_type3_p = 0
 				self.count_type2_m += 1
-			elif mass1[i] == 1 and mass2[i] == 0 and self.count_type2_p >= length_both and self.count_type1_p >= length_single and self.count_axle_start:
+			elif mass1[i] == 0 and mass2[i] == 0 and self.count_type3_m:
+				self.count_type2_m = 1
+				self.count_type3_m = 0
+			elif mass1[i] == 1 and mass2[i] == 0 and self.count_type2_p >= length_both and self.count_type1_p >= length_single:
 				self.count_type1_m = 0
 				self.count_type2_m = 0
 				self.count_type3_m = 0
 				self.count_type3_p += 1
-			elif mass1[i] == 0 and mass2[i] == 1 and self.count_type2_m >= length_both and self.count_type1_m >= length_single and self.count_axle_start:
+			elif mass1[i] == 0 and mass2[i] == 1 and self.count_type2_m >= length_both and self.count_type1_m >= length_single:
 				self.count_type1_p = 0
 				self.count_type2_p = 0
 				self.count_type3_p = 0
@@ -278,39 +282,24 @@ class FindAxle:
 				self.count_type1_m = 0
 				self.count_type2_m = 0
 				self.count_type3_m = 0
-				self.count_axle_lock = False
+			if mass1[i] == 1:
+				if self.count_type1_p >= (length_single + length_both):
+					self.count_sys1 += 1
+				if not self.count_type3_p:
+					self.count_type1_p = 0
+					self.count_type2_p = 0
+			if mass2[i] == 1:
+				if self.count_type1_m >= (length_single + length_both):
+					self.count_sys2 += 1
+				if not self.count_type3_m:
+					self.count_type1_m = 0
+					self.count_type2_m = 0
 			if self.count_type3_p >= length_single and not self.count_axle_lock and mass2[i] == 1:
 				self.count_axle += 1
 				self.count_axle_lock = True
-				self.count_axle_start = False
 			if self.count_type3_m >= length_single and not self.count_axle_lock and mass1[i] == 1:
 				self.count_axle -= 1
 				self.count_axle_lock = True
-				self.count_axle_start = False
-			if mass1[i] == 0:
-				self.detect_sys1 += 1
-				if self.detect_sys1 >= (length_single + length_both) and not self.count_sys1_lock:
-					self.count_sys1 += 1
-					self.count_sys1_lock = True
-			else:
-				self.detect_sys1 = 0
-				self.count_sys1_lock = False
-			if mass2[i] == 0:
-				self.detect_sys2 += 1
-				if self.detect_sys2 >= (length_single + length_both) and not self.count_sys2_lock:
-					self.count_sys2 += 1
-					self.count_sys2_lock = True
-			else:
-				self.detect_sys2 = 0
-				self.count_sys2_lock = False
-		self.count_type1_p = 0
-		self.count_type2_p = 0
-		self.count_type3_p = 0
-		self.count_type1_m = 0
-		self.count_type2_m = 0
-		self.count_type3_m = 0
-		self.count_sys1_lock = False
-		self.count_sys2_lock = False
 		pass
 
 	def get_count_axle(self):
