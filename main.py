@@ -179,10 +179,6 @@ class FindAxle:
 		self.count_sys2 = 0
 		self.detect_sys1 = 0
 		self.detect_sys2 = 0
-		self.count_axle_lock = False
-		self.count_sys1_lock = False
-		self.count_sys1_lock = False
-		self.count_axle_start = False
 		self.count_type1_p = 0
 		self.count_type2_p = 0
 		self.count_type3_p = 0
@@ -191,17 +187,18 @@ class FindAxle:
 		self.count_type3_m = 0
 
 	def work_find_axle(self, data: str):
-		self.str1 = data[data.find('(') + 1:data.find(')')]
-		self.str2 = data[data.rfind('(') + 1:data.rfind(')')]
+		data = data.lower().replace('u', 'µ').replace(' ', '').replace(';', '')
+		self.str1 = data[data.find('sys1(') + 5:data.find('sys1(') + data[data.find('sys1('):].find(')')]
+		self.str2 = data[data.find('sys2(') + 5:data.find('sys2(') + data[data.find('sys2('):].find(')')]
 		self.form_mass_data(self.sys_array1, self.str1)
 		self.form_mass_data(self.sys_array2, self.str2)
 		self.find_axle(self.sys_array1, self.sys_array2, min(len(self.sys_array1), len(self.sys_array2)))
 		self.sys_array1.clear()
 		self.sys_array2.clear()
 
+
 	def form_mass_data(self, sys_array, str):
 		last = 0
-		str = str.replace('u', 'µ').replace(' ', '').replace(';', '')
 		count_ex = str.count('µs')
 		for _ in range(count_ex):
 			sys_value = int(str[str.find(':') - 1])
@@ -216,23 +213,19 @@ class FindAxle:
 		self.str = ''
 		self.str1 = ''
 		self.str2 = ''
-		self.sys_array1 = []
-		self.sys_array2 = []
 		self.count_axle = 0
 		self.count_sys1 = 0
 		self.count_sys2 = 0
 		self.detect_sys1 = 0
 		self.detect_sys2 = 0
-		self.count_axle_lock = False
-		self.count_sys1_lock = False
-		self.count_sys1_lock = False
-		self.count_axle_start = False
 		self.count_type1_p = 0
 		self.count_type2_p = 0
 		self.count_type3_p = 0
 		self.count_type1_m = 0
 		self.count_type2_m = 0
 		self.count_type3_m = 0
+		self.sys_array1.clear()
+		self.sys_array2.clear()
 
 	def find_axle(self, mass1, mass2, size: int):
 		length_single = 20
@@ -275,31 +268,28 @@ class FindAxle:
 				self.count_type2_p = 0
 				self.count_type3_p = 0
 				self.count_type3_m += 1
-			else:
+			if self.count_type3_p >= length_single and mass2[i] == 1:
+				self.count_axle += 1
 				self.count_type1_p = 0
 				self.count_type2_p = 0
 				self.count_type3_p = 0
+			if self.count_type3_m >= length_single and mass1[i] == 1:
+				self.count_axle -= 1
 				self.count_type1_m = 0
 				self.count_type2_m = 0
 				self.count_type3_m = 0
-			if mass1[i] == 1:
-				if self.count_type1_p >= (length_single + length_both):
+			if mass1[i] == 0:
+				self.detect_sys1 += 1
+			else:
+				if self.detect_sys1 >= (length_single + length_both):
 					self.count_sys1 += 1
-				if not self.count_type3_p:
-					self.count_type1_p = 0
-					self.count_type2_p = 0
-			if mass2[i] == 1:
-				if self.count_type1_m >= (length_single + length_both):
+				self.detect_sys1 = 0
+			if mass2[i] == 0:
+				self.detect_sys2 += 1
+			else:
+				if self.detect_sys2 >= (length_single + length_both):
 					self.count_sys2 += 1
-				if not self.count_type3_m:
-					self.count_type1_m = 0
-					self.count_type2_m = 0
-			if self.count_type3_p >= length_single and not self.count_axle_lock and mass2[i] == 1:
-				self.count_axle += 1
-				self.count_axle_lock = True
-			if self.count_type3_m >= length_single and not self.count_axle_lock and mass1[i] == 1:
-				self.count_axle -= 1
-				self.count_axle_lock = True
+				self.detect_sys2 = 0
 		pass
 
 	def get_count_axle(self):
